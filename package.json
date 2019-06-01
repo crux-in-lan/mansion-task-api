@@ -1,0 +1,29 @@
+{
+  "name": "mansion-task-api",
+  "version": "1.0.0",
+  "description": "A simple Web API (BE) for mansion-task repo.",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crux-in-lan/mansion-task-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/crux-in-lan/mansion-task-api/issues"
+  },
+  "homepage": "https://github.com/crux-in-lan/mansion-task-api",
+  "devDependencies": {
+    "nodemon": "^1.18.10"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "simple-node-logger": "^18.12.22",
+    "websocket": "^1.0.28"
+  }
+}
