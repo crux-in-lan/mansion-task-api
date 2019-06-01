@@ -48,18 +48,25 @@ wsServer.on('request', function(request) {
     console.log((new Date()) + ' Connection accepted.');
     connection.on('message', function(message) {
         if (message.type === 'utf8') {
-        	const payload = JSON.parse(message.utf8Data);
+        	const req_payload = JSON.parse(message.utf8Data);
         	console.log('Received Message: ' + message.utf8Data);
         	//After connecting make reference between username and the connection
-        	if(payload.first) {
+        	if(req_payload.first) {
         		console.log('FIRST');
-				recipientsObj[payload.username] = connection;
+				recipientsObj[req_payload.username] = connection;
         	} else {
-	            console.log('SECOND Received Message: ' + payload);
+        		const res_payload = {
+        			message: {
+        				id: Math.floor(Math.random() * 100000000) + 1,
+	        			sender: req_payload.username,
+	        			content: req_payload.inputMessage
+        			}
+        		};
+	            console.log('SECOND Received Message: ' + message.utf8Data);
 	            log.info(message.utf8Data);
 	            // checkLogFileSize(opts);
-	            if(typeof recipientsObj[payload.recipient] !== 'undefined') {
-	            	recipientsObj[payload.recipient].sendUTF(message.utf8Data);
+	            if(typeof recipientsObj[req_payload.recipient] !== 'undefined') {
+	            	recipientsObj[req_payload.recipient].sendUTF(JSON.stringify(res_payload));
 	        	} else {
 	        		console.log('This recipient is not in the List');
 	        	}
