@@ -50,26 +50,63 @@ wsServer.on('request', function(request) {
         if (message.type === 'utf8') {
         	const req_payload = JSON.parse(message.utf8Data);
         	console.log('Received Message: ' + message.utf8Data);
+
+        	let res_payload = {};
         	//After connecting make reference between username and the connection
-        	if(req_payload.first) {
-        		console.log('FIRST');
-				recipientsObj[req_payload.username] = connection;
-        	} else {
-        		const res_payload = {
-        			message: {
-        				id: Math.floor(Math.random() * 100000000) + 1,
-	        			sender: req_payload.username,
-	        			content: req_payload.inputMessage
-        			}
-        		};
-	            console.log('SECOND Received Message: ' + message.utf8Data);
-	            log.info(message.utf8Data);
-	            checkLogFileSize(opts);
-	            if(typeof recipientsObj[req_payload.recipient] !== 'undefined') {
-	            	recipientsObj[req_payload.recipient].sendUTF(JSON.stringify(res_payload));
-	        	} else {
-	        		console.log('This recipient is not in the List');
-	        	}
+        	switch(req_payload.command) {
+        		case 'first':
+	        		console.log('FIRST');
+					recipientsObj[req_payload.username] = connection;
+				break;
+        		case 'send':
+	        		res_payload = {
+	        			command: 'send',
+		    			message: {
+		    				id: Math.floor(Math.random() * 100000000) + 1,
+		        			sender: req_payload.username,
+		        			content: req_payload.inputMessage
+		    			}
+		    		};	        		
+		            console.log('SECOND Received Message: ' + message.utf8Data);
+		            log.info(message.utf8Data);
+		            checkLogFileSize(opts);
+		            if(typeof recipientsObj[req_payload.recipient] !== 'undefined') {
+		            	recipientsObj[req_payload.recipient].sendUTF(JSON.stringify(res_payload));
+		        	} else {
+		        		console.log('This recipient is not in the List');
+		        	}		        	
+		        break;
+		        case 'sendAll':
+			        res_payload = {
+			        		command: 'send',
+			    			message: {
+			    				id: Math.floor(Math.random() * 100000000) + 1,
+			        			sender: req_payload.username,
+			        			content: req_payload.inputMessage
+			    			}
+		    		};			        	
+		            console.log('THIRD Received Message: ' + message.utf8Data);
+		            log.info(message.utf8Data);
+		            checkLogFileSize(opts);
+		            //Send to everyone exept the sender
+		            Object.entries(recipientsObj).forEach(elem => {
+		            	// if(elem[0] !== req_payload.username) {
+		            		elem[1].sendUTF(JSON.stringify(res_payload));
+		            	// }
+		            });		         
+		        break;
+		        case 'sendReceipt':
+		        	res_payload = {
+			    		command: 'seen'
+		    		};			        	
+		            console.log('FOURTH Received Message: ' + message.utf8Data);
+		            		            
+		            if(typeof recipientsObj[req_payload.recipient] !== 'undefined') {
+		            	recipientsObj[req_payload.recipient].sendUTF(JSON.stringify(res_payload));
+		        	} else {
+		        		console.log('This recipient is not in the List');
+		        	}	
+		        break;
         	}
         }
         else if (message.type === 'binary') {
