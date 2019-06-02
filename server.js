@@ -10,7 +10,7 @@ const opts = {
 const recipientsObj = {};
 
 //Create logger object
-const log = SimpleNodeLogger.createSimpleLogger(opts);
+var log = SimpleNodeLogger.createSimpleLogger(opts);
 
 var server = http.createServer(function(request, response) {
     console.log((new Date()) + ' Received request for ' + request.url);
@@ -64,7 +64,7 @@ wsServer.on('request', function(request) {
         		};
 	            console.log('SECOND Received Message: ' + message.utf8Data);
 	            log.info(message.utf8Data);
-	            // checkLogFileSize(opts);
+	            checkLogFileSize(opts);
 	            if(typeof recipientsObj[req_payload.recipient] !== 'undefined') {
 	            	recipientsObj[req_payload.recipient].sendUTF(JSON.stringify(res_payload));
 	        	} else {
@@ -87,11 +87,14 @@ checkLogFileSize = (opts) => {
 		const stats = fs.statSync(opts.logFilePath);
 		const fileSizeInBytes = stats.size;
 
-		if(fileSizeInBytes > 100) {
+		console.log('fileSizeInBytes: ',fileSizeInBytes);
+
+		if(fileSizeInBytes > (100 * 1024) ){
 			if(fs.existsSync(`${opts.logFilePath}.old`)) {
 				fs.unlinkSync(`${opts.logFilePath}.old`);
 			}
 			fs.renameSync(`${opts.logFilePath}`,`${opts.logFilePath}.old`);
+			log = SimpleNodeLogger.createSimpleLogger(opts);
 		}
 	} catch(err) {
 		console.error(err);
