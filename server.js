@@ -90,9 +90,9 @@ wsServer.on('request', function(request) {
 		            checkLogFileSize(opts);
 		            //Send to everyone exept the sender
 		            Object.entries(recipientsObj).forEach(elem => {
-		            	// if(elem[0] !== req_payload.username) {
+		            	if(elem[0] !== req_payload.username) {
 		            		elem[1].sendUTF(JSON.stringify(res_payload));
-		            	// }
+		            	}
 		            });		         
 		        break;
 		        case 'sendReceipt':
